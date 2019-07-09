@@ -2,6 +2,7 @@ extern crate lerp;
 mod interface;
 mod samplers;
 mod containers;
+mod timelines;
 
 
 #[cfg(test)]
