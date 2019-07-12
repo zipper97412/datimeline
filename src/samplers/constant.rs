@@ -3,7 +3,7 @@ use crate::interface::DataSampler;
 #[allow(dead_code)]
 pub struct ConstSampler;
 
-impl<T: Copy,V> DataSampler<T,V> for ConstSampler {
+impl<T,V> DataSampler<T,V> for ConstSampler {
     fn sample(past_values: &mut Iterator<Item = (T,V)>, _: &mut Iterator<Item = (T,V)>, _: T) -> Option<V> {
         Some(past_values.next()?.1)
     }
