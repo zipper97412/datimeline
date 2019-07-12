@@ -56,15 +56,12 @@ pub struct LerpSampler<F = f64> {
     _phantom: std::marker::PhantomData<F>
 }
 
-impl<T, N, D, F> DataSampler<T,VectorN<N,D>> for LerpSampler<F>
+impl<T, V, F> DataSampler<T,V> for LerpSampler<F>
 where
     F: Float,
     T: Sub<Output = T> + Clone + Into<F>,
-    VectorN<N,D>: Lerp<F>,
-    N: Scalar,
-    D: DimName,
-    DefaultAllocator: Allocator<N, D> {
-    fn sample(past_values: &mut Iterator<Item = (T,VectorN<N,D>)>, future_values: &mut Iterator<Item = (T,VectorN<N,D>)>, time: T) -> Option<VectorN<N,D>> {
+    V: Lerp<F> {
+    fn sample(past_values: &mut Iterator<Item = (T,V)>, future_values: &mut Iterator<Item = (T,V)>, time: T) -> Option<V> {
         match (past_values.next(), future_values.next()) {
 
             //Interpolation
