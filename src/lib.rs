@@ -1,6 +1,6 @@
 extern crate nalgebra;
 extern crate num_traits;
-extern crate alga;
+//extern crate alga;
 
 mod interface;
 mod samplers;
