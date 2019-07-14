@@ -1,5 +1,5 @@
 use crate::interface::DataSampler;
-use nalgebra::{VectorN, DimName, allocator::Allocator, DefaultAllocator, Scalar};
+use nalgebra::{MatrixMN, Dim, Scalar, allocator::Allocator, DefaultAllocator};
 use num_traits::{Float};
 use std::ops::{Add, Sub};
 
@@ -8,13 +8,14 @@ pub trait Lerp<F> {
     fn lerp(self, other: Self, t: F) -> Self;
 }
 
-impl<N, D, F> Lerp<F> for VectorN<N,D>
+impl<N, R, C, F> Lerp<F> for MatrixMN<N, R, C>
 where
     N: Clone + Scalar + Lerp<F>,
-    VectorN<N,D>: Clone + Add<Output=VectorN<N,D>> + Sub<Output=VectorN<N,D>>, 
+    MatrixMN<N, R, C>: Clone + Add<Output=MatrixMN<N, R, C>> + Sub<Output=MatrixMN<N, R, C>>, 
     F: Float,
-    D: DimName,
-    DefaultAllocator: Allocator<N, D> {
+    R: Dim,
+    C: Dim,
+    DefaultAllocator: Allocator<N, R, C> {
     fn lerp(self, other: Self, t: F) -> Self {
         let mut self_matrix = self.into_owned();
         let mut other_matrix = other.into_owned();
@@ -23,33 +24,43 @@ where
         }
         self_matrix
     }
-} 
-
-/* impl<T,F> Lerp<F> for T 
-where 
-    F: Float,
-    T: Clone + Add<Output = T> + Sub<Output = T> + Mul<F,Output = T> {
-    fn lerp(self, other: Self, t: F) -> Self {
-        self.clone() + ((other - self) as T * t) as Self
-    }
-} */
-
-impl Lerp<f64> for i32 {
-    fn lerp(self, other: Self, t: f64) -> Self {
-        self + ((other - self) as f64 * t) as Self
-    }
 }
-impl Lerp<f64> for f32 {
-    fn lerp(self, other: Self, t: f64) -> Self {
-        self + ((other - self) as f64 * t) as Self
-    }
-}
-impl Lerp<f64> for f64 {
-    fn lerp(self, other: Self, t: f64) -> Self {
-        self + ((other - self) as f64 * t) as Self
-    }
-} 
 
+macro_rules! impl_lerp {
+    ($p:ty, $t:ty) => {
+        impl Lerp<$p> for $t {
+            fn lerp(self, other: Self, t: $p) -> Self {
+                self + ((other - self) as $p * t) as Self
+            }
+        }
+    };
+}
+
+impl_lerp!(f32, u8);
+impl_lerp!(f32, i8);
+impl_lerp!(f32, u16);
+impl_lerp!(f32, i16);
+impl_lerp!(f32, u32);
+impl_lerp!(f32, i32);
+impl_lerp!(f32, f32);
+impl_lerp!(f32, u64);
+impl_lerp!(f32, i64);
+impl_lerp!(f32, f64);
+impl_lerp!(f32, u128);
+impl_lerp!(f32, i128);
+
+impl_lerp!(f64, u8);
+impl_lerp!(f64, i8);
+impl_lerp!(f64, u16);
+impl_lerp!(f64, i16);
+impl_lerp!(f64, u32);
+impl_lerp!(f64, i32);
+impl_lerp!(f64, f32);
+impl_lerp!(f64, u64);
+impl_lerp!(f64, i64);
+impl_lerp!(f64, f64);
+impl_lerp!(f64, u128);
+impl_lerp!(f64, i128);
 
 #[allow(dead_code)]
 pub struct LerpSampler<F = f64> {
