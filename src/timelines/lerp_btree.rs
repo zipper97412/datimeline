@@ -40,11 +40,29 @@ mod tests {
     }
 
     #[test]
-    fn interpolation_i32_i32() {
+    fn interpolation() {
         let data = adapt(vec![(15, 20), (10, 10)]);
         let bmap = BTreeMap::from_iter(data);
         assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
         assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
         assert_eq!(bmap.get_sample(13), Some(Vector1::new(16)));
+    }
+
+    #[test]
+    fn extrapolation_future() {
+        let data = adapt(vec![(15, 20), (10, 10)]);
+        let bmap = BTreeMap::from_iter(data);
+        assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
+        assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
+        assert_eq!(bmap.get_sample(17), Some(Vector1::new(24)));
+    }
+
+    #[test]
+    fn extrapolation_past() {
+        let data = adapt(vec![(15, 20), (10, 10)]);
+        let bmap = BTreeMap::from_iter(data);
+        assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
+        assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
+        assert_eq!(bmap.get_sample(7), Some(Vector1::new(4)));
     }
 }
