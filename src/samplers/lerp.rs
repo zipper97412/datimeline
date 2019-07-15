@@ -36,6 +36,8 @@ macro_rules! impl_lerp {
     };
 }
 
+impl_lerp!(f32, usize);
+impl_lerp!(f32, isize);
 impl_lerp!(f32, u8);
 impl_lerp!(f32, i8);
 impl_lerp!(f32, u16);
@@ -49,6 +51,8 @@ impl_lerp!(f32, f64);
 impl_lerp!(f32, u128);
 impl_lerp!(f32, i128);
 
+impl_lerp!(f64, usize);
+impl_lerp!(f64, isize);
 impl_lerp!(f64, u8);
 impl_lerp!(f64, i8);
 impl_lerp!(f64, u16);
