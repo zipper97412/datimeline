@@ -113,83 +113,83 @@ mod tests {
 
     #[test]
     fn interpolation_success() {
-        let past = adapt(vec![(15_i32, 20), (10, 1)]);
-        let future = adapt(vec![(20, 30), (25, 4)]);
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 17), Some(Vector1::new(24)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30)));
+        let past = adapt(vec![(15_i32, 20_i32), (10, 1)]);
+        let future = adapt(vec![(20_i32, 30_i32), (25, 4)]);
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 17), Some(Vector1::new(24)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30)));
 
     }
     #[test]
     fn interpolation_success_i32_f32() {
         let past = adapt(vec![(15, 20.26_f32), (10, 1.0)]);
         let future = adapt(vec![(20, 30_f32), (25, 4.0)]);
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18), Some(Vector1::new(26.104)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20.26)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30.0)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18), Some(Vector1::new(26.104)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20.26)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30.0)));
 
     }
     #[test]
     fn interpolation_success_i32_f64() {
         let past = adapt(vec![(15, 20.26_f64), (10, 1.0)]);
         let future = adapt(vec![(20, 30_f64), (25, 4.0)]);
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18), Some(Vector1::new(26.104)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20.26)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30.0)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18), Some(Vector1::new(26.104)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(20.26)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(30.0)));
 
     }
     #[test]
     fn interpolation_success_f32_i32() {
         let past = adapt(vec![(15_f32, 20), (10.0, 1)]);
         let future = adapt(vec![(20_f32, 30), (25.0, 4)]);
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18.0), Some(Vector1::new(26)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15.0), Some(Vector1::new(20)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20.0), Some(Vector1::new(30)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18.0), Some(Vector1::new(26)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15.0), Some(Vector1::new(20)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20.0), Some(Vector1::new(30)));
     }
     #[test]
     fn interpolation_success_f64_i32() {
         let past = adapt(vec![(15_f64, 20), (10.0, 1)]);
         let future = adapt(vec![(20_f64, 30), (25.0, 4)]);
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18.0), Some(Vector1::new(26)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15.0), Some(Vector1::new(20)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20.0), Some(Vector1::new(30)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 18.0), Some(Vector1::new(26)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15.0), Some(Vector1::new(20)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20.0), Some(Vector1::new(30)));
     }
     
     #[test]
     fn interpolation_failed() {
         let past: Vec<(i32,Vector1<i32>)> = Vec::new();
         let future = Vec::new();
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 42), None);
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 42), None);
 
     }
     #[test]
     fn extrapolation_future_success() {
         let past = adapt(vec![(15, 2), (10, 1)]);
         let future = Vec::new();
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(2)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(3)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), Some(Vector1::new(2)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 20), Some(Vector1::new(3)));
 
     }
     #[test]
     fn extrapolation_future_failed() {
         let past = adapt(vec![(10, 1)]);
         let future = Vec::new();
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), None);
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 15), None);
 
     }
     #[test]
     fn extrapolation_past_success() {
         let future = adapt(vec![(15, 2), (10, 1)]);
         let past = Vec::new();
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 10), Some(Vector1::new(1)));
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 5), Some(Vector1::new(0)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 10), Some(Vector1::new(1)));
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 5), Some(Vector1::new(0)));
 
     }
     #[test]
     fn extrapolation_past_failed() {
         let future = adapt(vec![(10, 1)]);
         let past = Vec::new();
-        assert_eq!(LerpSampler::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 5), None);
+        assert_eq!(LerpSampler::<f64>::sample(&mut past.clone().into_iter(), &mut future.clone().into_iter(), 5), None);
 
     }
 }
