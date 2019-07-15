@@ -3,19 +3,56 @@ use crate::samplers::{LerpSampler, Lerp};
 use std::collections::BTreeMap;
 use std::cmp::Ord;
 use std::ops::{Sub};
-use nalgebra::{VectorN, DimName, allocator::Allocator, DefaultAllocator, Scalar};
+use num_traits::Float;
+use std::ops::{Deref, DerefMut};
 
+
+/// Linear interpolation sampler and b-tree map container
 #[allow(dead_code)]
-pub type LerpBtreeTimeline<T,N,D> = BTreeMap<T,VectorN<N,D>>;
+pub struct LerpBtreeTimeline<T,V: Lerp<F>,F: Float> {
+    inner: BTreeMap<T,V>,
+    _phantom: std::marker::PhantomData<F>
+}
 
-impl<T,N,D> TimeLine<T> for LerpBtreeTimeline<T,N,D>
+impl<T,V,F> LerpBtreeTimeline<T,V,F>
+where
+    F: Float,
+    T: Clone + Ord + Sub<Output = T> + Into<F>,
+    V: Clone + Lerp<F> {
+    #[allow(dead_code)]
+    pub fn new(btreemap: BTreeMap<T,V>) -> Self {
+        LerpBtreeTimeline{
+            inner: btreemap,
+            _phantom: std::marker::PhantomData::<F>
+        }
+    }
+}
+
+impl<T,V,F> Deref for LerpBtreeTimeline<T,V,F> 
+where
+    V: Lerp<F>,
+    F: Float {
+    type Target = BTreeMap<T,V>;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<V,T,F> DerefMut for LerpBtreeTimeline<T,V,F> 
+where
+    V: Lerp<F>,
+    F: Float {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
+impl<T,V,F: Float> TimeLine<T> for LerpBtreeTimeline<T,V,F>
 where 
-    T: Clone + Ord + Sub<Output = T> + Into<f64>,
-    N: Scalar,
-    VectorN<N,D>: Lerp<f64>,
-    D: DimName,
-    DefaultAllocator: Allocator<N, D> {
-    type Item = VectorN<N,D>;
+    F: Float,
+    T: Clone + Ord + Sub<Output = T> + Into<F>,
+    V: Clone + Lerp<F> {
+    type Item = V;
     fn get_sample(&self, time: T) -> Option<Self::Item> {
         let (mut past, mut future) = self.split_at(time.clone());
         LerpSampler::sample(&mut past, &mut future, time)
@@ -28,11 +65,13 @@ where
     }
 }
 
+#[cfg(feature = "nalgebra_impl")]
 #[cfg(test)]
-mod tests {
+mod tests_nalgebra {
     use super::*;
     use nalgebra::Vector1;
     use std::iter::FromIterator;
+    use nalgebra::Scalar;
     fn adapt<T,N: Scalar>(input: Vec<(T,N)>) -> Vec<(T, Vector1<N>)> {
         input.into_iter()
             .map(|p|(p.0, Vector1::new(p.1)))
@@ -42,7 +81,7 @@ mod tests {
     #[test]
     fn interpolation() {
         let data = adapt(vec![(15, 20), (10, 10)]);
-        let bmap = BTreeMap::from_iter(data);
+        let bmap = LerpBtreeTimeline::<_,_,f64>::new(BTreeMap::from_iter(data));
         assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
         assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
         assert_eq!(bmap.get_sample(13), Some(Vector1::new(16)));
@@ -51,7 +90,7 @@ mod tests {
     #[test]
     fn extrapolation_future() {
         let data = adapt(vec![(15, 20), (10, 10)]);
-        let bmap = BTreeMap::from_iter(data);
+        let bmap = LerpBtreeTimeline::<_,_,f64>::new(BTreeMap::from_iter(data));
         assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
         assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
         assert_eq!(bmap.get_sample(17), Some(Vector1::new(24)));
@@ -60,7 +99,7 @@ mod tests {
     #[test]
     fn extrapolation_past() {
         let data = adapt(vec![(15, 20), (10, 10)]);
-        let bmap = BTreeMap::from_iter(data);
+        let bmap = LerpBtreeTimeline::<_,_,f64>::new(BTreeMap::from_iter(data));
         assert_eq!(bmap.get_sample(10), Some(Vector1::new(10)));
         assert_eq!(bmap.get_sample(15), Some(Vector1::new(20)));
         assert_eq!(bmap.get_sample(7), Some(Vector1::new(4)));

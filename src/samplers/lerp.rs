@@ -1,13 +1,24 @@
 use crate::interface::DataSampler;
+#[cfg(feature = "nalgebra_impl")]
 use nalgebra::{MatrixMN, Dim, Scalar, allocator::Allocator, DefaultAllocator};
-use num_traits::{Float};
+use num_traits::Float;
 use std::ops::{Add, Sub};
 
-
+/// Items that can be linteraly inter/extrapoled acording to float type F
 pub trait Lerp<F> {
+    /// interpolate self with other proportionally to t
+    /// t should be a float f32 or f64 (or maybe an other float representation)
+    /// if t = 0, result is self
+    /// if t = 1, result is other
+    /// if t is outside of [0..1], it is an extrapolation (still works)
     fn lerp(self, other: Self, t: F) -> Self;
 }
 
+#[cfg(feature = "nalgebra_impl")]
+/// Implement Lerp for nalgebra matrixMN (and VectorN) type.
+/// The interpolation is done memberwise for each matrix element
+/// The scalar type N for each element of the matrix should also implement Lerp<F>
+/// Todo exemple
 impl<N, R, C, F> Lerp<F> for MatrixMN<N, R, C>
 where
     N: Clone + Scalar + Lerp<F>,
@@ -66,6 +77,11 @@ impl_lerp!(f64, f64);
 impl_lerp!(f64, u128);
 impl_lerp!(f64, i128);
 
+
+/// Implement DataSampler for linear inter/extrapolation strategy
+/// 
+/// for the interpolation to succeed the algorithme need at least 2 values
+/// from both `past_values` and `future_values` (interpolation) or either one (extrapolation)
 #[allow(dead_code)]
 pub struct LerpSampler<F = f64> {
     _phantom: std::marker::PhantomData<F>
@@ -104,9 +120,9 @@ where
     }
 }
 
-
+#[cfg(feature = "nalgebra_impl")]
 #[cfg(test)]
-mod tests {
+mod tests_nalgebra {
     use super::*;
     use nalgebra::Vector1;
     fn adapt<T,N: Scalar>(input: Vec<(T,N)>) -> Vec<(T, Vector1<N>)> {
